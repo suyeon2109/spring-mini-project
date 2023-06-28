@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class MemberForm {
+public class UserForm {
     private String writerId;
     private String writerPwd;
     private String writerName;

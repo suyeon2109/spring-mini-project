@@ -7,12 +7,14 @@ import lombok.Setter;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-public class Member {
+@Table(name = "USERS")
+public class User {
     @Id @GeneratedValue
     private Long id;
     @NotNull

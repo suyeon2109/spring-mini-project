@@ -16,11 +16,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="member : ${members}">
-                <td th:text="${member.writerId}"></td>
-                <td th:text="${member.writerName}"></td>
-                <td th:text="${member.createdAt}"></td>
-                <td th:text="${member.modifiedAt?}"></td>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.writerId}"></td>
+                <td th:text="${user.writerName}"></td>
+                <td th:text="${user.createdAt}"></td>
+                <td th:text="${user.modifiedAt}"></td>
             </tr>
             </tbody>
         </table>
