@@ -33,15 +33,20 @@ public class UserRepository {
                 .getResultList();
     }
 
-    public Optional<User> findByWriterId(String writerId){
-        try{
-            User user = em.createQuery("select u from User u where u.writerId = :writerId", User.class)
-                    .setParameter("writerId", writerId)
-                    .getSingleResult();
-            return Optional.of(user);
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
-    }
+//    public Optional<User> findByWriterId(String writerId){
+//        try{
+//            User user = em.createQuery("select u from User u where u.writerId = :writerId", User.class)
+//                    .setParameter("writerId", writerId)
+//                    .getSingleResult();
+//            return Optional.of(user);
+//        } catch (NoResultException e) {
+//            return Optional.empty();
+//        }
+//    }
 
+    public List<User> findByWriterId(String writerId){
+        return em.createQuery("select u from User u where u.writerId = :writerId", User.class)
+                .setParameter("writerId", writerId)
+                .getResultList();
+    }
 }

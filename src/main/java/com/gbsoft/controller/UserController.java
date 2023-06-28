@@ -1,6 +1,7 @@
 package com.gbsoft.controller;
 
 import com.gbsoft.domain.User;
+import com.gbsoft.dto.UserFindForm;
 import com.gbsoft.dto.UserForm;
 import com.gbsoft.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,15 @@ public class UserController {
 
     @GetMapping("/users")
     public String list(Model model) {
-        List<User> users = userService.findUsers();
+        List<User> users = userService.findAllUsers();
+        model.addAttribute("userFindForm", new UserFindForm());
+        model.addAttribute("users", users);
+        return "users/userList";
+    }
+
+    @GetMapping("/users/find")
+    public String search(UserFindForm form, Model model) {
+        List<User> users = userService.searchUsers(form);
         model.addAttribute("users", users);
         return "users/userList";
     }

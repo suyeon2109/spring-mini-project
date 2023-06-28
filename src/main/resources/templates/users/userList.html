@@ -5,6 +5,20 @@
 
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <!--/* 검색 */-->
+    <div class="search_box">
+        <form role="form" action="/users/find" th:object="${userFindForm}" method="get">
+            <div>
+                <select title="검색 유형 선택" th:field="*{searchType}">
+                    <option value="writerId">아이디</option>
+                    <option value="writerName">이름</option>
+                </select>
+                <input type="text" title="키워드 입력" th:field="*{keyword}"/>
+                <button type="submit" class="btn-secondary">검색</button>
+            </div>
+        </form>
+    </div>
+    <br/>
     <div>
         <table class="table table-striped">
             <thead>
@@ -32,3 +46,4 @@
 
 </body>
 </html>
+

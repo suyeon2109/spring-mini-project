@@ -1,6 +1,7 @@
 package com.gbsoft.service;
 
 import com.gbsoft.domain.User;
+import com.gbsoft.dto.UserFindForm;
 import com.gbsoft.dto.UserForm;
 import com.gbsoft.repository.UserRepository;
 import com.gbsoft.util.AesEncDec;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,14 +45,14 @@ public class UserService {
 
     private boolean validateDuplicateUser(String writerId) {
         boolean result = false;
-        Optional<User> users = userRepository.findByWriterId(writerId);
-        if(users.equals(Optional.empty())) {
+        List<User> users = userRepository.findByWriterId(writerId);
+        if(users.isEmpty()) {
             result = true;
         }
         return result;
     }
 
-    public List<User> findUsers(){
+    public List<User> findAllUsers(){
         List<User> users = userRepository.findAll();
         for(User m : users){
             m.setWriterId(AesEncDec.decrypt(m.getWriterId()));
@@ -60,11 +61,20 @@ public class UserService {
         return users;
     }
 
-    public List<User> findByName(String writerName){
-        return userRepository.findByName(writerName);
-    }
+    public List<User> searchUsers(UserFindForm form) {
+        List<User> users = new ArrayList<>();
 
-    public Optional<User> findByWriterId(String writerId){
-        return userRepository.findByWriterId(writerId);
+        if(form.getSearchType().equals("writerId")){
+            users = userRepository.findByWriterId(AesEncDec.encrypt(form.getKeyword()));
+        } else {
+            users = userRepository.findByName(AesEncDec.encrypt(form.getKeyword()));
+        }
+
+        for(User m : users){
+            m.setWriterId(AesEncDec.decrypt(m.getWriterId()));
+            m.setWriterName(AesEncDec.decrypt(m.getWriterName()));
+        }
+
+        return users;
     }
 }
