@@ -45,7 +45,7 @@ public class LoginService {
         map.put("writerId", writerId);
 
         newToken.setWriterId(writerId);
-        newToken.setAccessToken(Jwt.token(map, Optional.of(LocalDateTime.now().plusMinutes(1))));
+        newToken.setAccessToken(Jwt.token(map, Optional.of(LocalDateTime.now().plusMinutes(30))));
         newToken.setRefreshToken("");
         newToken.setUseYn("Y");
         newToken.setCreatedAt(LocalDateTime.now());
@@ -70,7 +70,7 @@ public class LoginService {
             Map<String, Object> map = new HashMap<>();
             map.put("writerId", writerId);
 
-            userTokens.get(userTokens.size()-1).setRefreshToken(Jwt.token(map, Optional.of(LocalDateTime.now().plusMinutes(1))));
+            userTokens.get(userTokens.size()-1).setRefreshToken(Jwt.token(map, Optional.of(LocalDateTime.now().plusMinutes(2))));
             userTokens.get(userTokens.size()-1).setModifiedAt(LocalDateTime.now());
             loginRepository.update(userTokens.get(userTokens.size()-1).getSeq(), userTokens.get(userTokens.size()-1));
 
