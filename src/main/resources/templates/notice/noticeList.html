@@ -7,11 +7,10 @@
     <div th:replace="fragments/bodyHeader :: bodyHeader" />
     <!--/* 검색 */-->
     <div class="search_box">
-        <form role="form" action="/users/find" th:object="${userFindForm}" method="get">
+        <form role="form" action="/notice/find" th:object="${noticeFindForm}" method="get">
             <div>
                 <select title="검색 유형 선택" th:field="*{searchType}">
-                    <option value="writerId">아이디</option>
-                    <option value="writerName">이름</option>
+                    <option value="title">제목</option>
                 </select>
                 <input type="text" title="키워드 입력" th:field="*{keyword}"/>
                 <button type="submit" class="btn-secondary">검색</button>
@@ -23,18 +22,24 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>아이디</th>
-                <th>이름</th>
-                <th>생성일자</th>
-                <th>수정일자</th>
+                <th>제목</th>
+                <th>내용</th>
+                <th>비고</th>
+                <th>생성시각</th>
+                <th>생성자 아이디</th>
+                <th>수정시각</th>
+                <th>수정자 아이디</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.writerId}"></td>
-                <td th:text="${user.writerName}"></td>
-                <td th:text="${user.createdAt}"></td>
-                <td th:text="${user.modifiedAt}"></td>
+            <tr th:each="notice : ${noticeList}">
+                <td th:text="${notice.title}"></td>
+                <td th:text="${notice.content}"></td>
+                <td th:text="${notice.note}"></td>
+                <td th:text="${notice.createdAt}"></td>
+                <td th:text="${notice.createdWriterId}"></td>
+                <td th:text="${notice.modifiedAt}"></td>
+                <td th:text="${notice.modifiedWriterId}"></td>
             </tr>
             </tbody>
         </table>

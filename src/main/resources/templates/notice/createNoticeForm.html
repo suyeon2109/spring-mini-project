@@ -6,19 +6,21 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
-    <form role="form" th:object="${userForm}">
+    <form role="form" th:object="${noticeForm}">
         <div class="form-group">
-            <label th:for="writerId">아이디</label>
-            <input type="text" th:field="*{writerId}" class="form-control" placeholder="아이디를 입력하세요">
+            <label th:for="title">제목</label>
+            <input type="text" th:field="*{title}" class="form-control" placeholder="제목을 입력하세요" required>
         </div>
         <div class="form-group">
-            <label th:for="writerPwd">비밀번호</label>
-            <input type="text" th:field="*{writerPwd}" class="form-control" placeholder="비밀번호를 입력하세요">
+            <label th:for="content">내용</label>
+            <textarea type="text" th:field="*{content}" class="form-control" placeholder="내용을 입력하세요" required></textarea>
         </div>
         <div class="form-group">
-            <label th:for="writerName">이름</label>
-            <input type="text" th:field="*{writerName}" class="form-control" placeholder="이름을 입력하세요">
+            <label th:for="note">비고</label>
+            <input type="text" th:field="*{note}" class="form-control" placeholder="비고를 입력하세요">
         </div>
+
+        <input type="hidden" th:value="${loginUserId}" id="loginUserId">
 
         <button type="button" onclick="dataSend()" class="btn btn-primary">Submit</button>
     </form>
@@ -32,16 +34,20 @@
 <script th:inline="javascript">
     function dataSend(){
         var data = {
-            writerId:$("#writerId").val(),
-            writerPwd: $("#writerPwd").val(),
-            writerName: $("#writerName").val()
+            title:$("#title").val(),
+            content: $("#content").val(),
+            note: $("#note").val(),
+            loginUserId: $("#loginUserId").val()
         };
         $.ajax({
-            url: "/users/join",
+            url: "/notice/regist",
             data: data,
             type: 'POST',
         }).done(function (data){
-            alert(data);
+            alert(data.message);
+            if(data.redirectUrl != ""){
+                location.href = data.redirectUrl;
+            }
         });
     }
 </script>

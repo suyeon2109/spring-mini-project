@@ -58,24 +58,25 @@ public class LoginService {
     @Transactional
     public boolean validateAndIssueRefreshToken(String writerId) {
         List<UserToken> userTokens = loginRepository.findByWriterId(writerId);
+        int num = userTokens.size() - 1;
 
         if (userTokens.isEmpty()) {
             log.info("UserToken is not exist");
             return false;
-        } else if (Jwt.validateToken(userTokens.get(userTokens.size()-1).getAccessToken())) {
+        } else if (Jwt.validateToken(userTokens.get(num).getAccessToken())) {
             log.info("Access token is valid");
             return true;
-        } else if (userTokens.get(userTokens.size()-1).getRefreshToken().equals("")) {
+        } else if (userTokens.get(num).getRefreshToken().equals("")) {
             log.info("RefreshToken is empty. Issue refreshToken.");
             Map<String, Object> map = new HashMap<>();
             map.put("writerId", writerId);
 
-            userTokens.get(userTokens.size()-1).setRefreshToken(Jwt.token(map, Optional.of(LocalDateTime.now().plusMinutes(2))));
-            userTokens.get(userTokens.size()-1).setModifiedAt(LocalDateTime.now());
-            loginRepository.update(userTokens.get(userTokens.size()-1).getSeq(), userTokens.get(userTokens.size()-1));
+            userTokens.get(num).setRefreshToken(Jwt.token(map, Optional.of(LocalDateTime.now().plusMinutes(2))));
+            userTokens.get(num).setModifiedAt(LocalDateTime.now());
+            loginRepository.update(userTokens.get(num).getSeq(), userTokens.get(num));
 
             return true;
-        } else if(Jwt.validateToken(userTokens.get(userTokens.size()-1).getRefreshToken())){
+        } else if(Jwt.validateToken(userTokens.get(num).getRefreshToken())){
             log.info("RefreshToken is valid");
             return true;
         } else {
