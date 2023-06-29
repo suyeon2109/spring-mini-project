@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <!--/* 검색 */-->
+    <div class="search_box">
+        <form role="form" action="/users/find" th:object="${userFindForm}" method="get">
+            <div>
+                <select title="검색 유형 선택" th:field="*{searchType}">
+                    <option value="writerId">아이디</option>
+                    <option value="writerName">이름</option>
+                </select>
+                <input type="text" title="키워드 입력" th:field="*{keyword}"/>
+                <button type="submit" class="btn-secondary">검색</button>
+            </div>
+        </form>
+    </div>
+    <br/>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>생성일자</th>
+                <th>수정일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.writerId}"></td>
+                <td th:text="${user.writerName}"></td>
+                <td th:text="${user.createdAt}"></td>
+                <td th:text="${user.modifiedAt}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+</body>
+</html>
+

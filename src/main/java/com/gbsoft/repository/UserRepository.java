@@ -49,4 +49,11 @@ public class UserRepository {
                 .setParameter("writerId", writerId)
                 .getResultList();
     }
+
+    public List<User> findByWriterIdAndWriterPwd(User user) {
+        return em.createQuery("select u from User u where u.writerId = :writerId and u.writerPwd = :writerPwd", User.class)
+                .setParameter("writerId", user.getWriterId())
+                .setParameter("writerPwd", user.getWriterPwd())
+                .getResultList();
+    }
 }

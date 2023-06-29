@@ -41,10 +41,7 @@
             data: data,
             type: 'POST',
         }).done(function (data){
-            alert(data.message);
-            if(data.redirectUrl != ""){
-                location.href = data.redirectUrl;
-            }
+            alert(data);
         });
     }
 </script>
