@@ -26,12 +26,12 @@ public class Notice {
     private LocalDateTime modifiedAt;
     private String modifiedWriterId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_id")
-    private User user;
-
-    public void setUser(User user) {
-        this.user = user;
-        user.getNoticeList().add(this);
-    }
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "writer_id")
+//    private User user;
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//        user.getNoticeList().add(this);
+//    }
 }

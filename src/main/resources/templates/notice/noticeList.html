@@ -13,7 +13,10 @@
                     <option value="title">제목</option>
                 </select>
                 <input type="text" title="키워드 입력" th:field="*{keyword}"/>
+                <input type="hidden" th:value="0" name="offset">
+                <input type="hidden" th:value="${loginUserId}" id="loginUserId" name="loginUserId">
                 <button type="submit" class="btn-secondary">검색</button>
+<!--                <button type="button" onclick="search()" class="btn-secondary">검색</button>-->
             </div>
         </form>
     </div>
@@ -22,6 +25,7 @@
         <table class="table table-striped">
             <thead>
             <tr>
+                <th></th>
                 <th>제목</th>
                 <th>내용</th>
                 <th>비고</th>
@@ -33,7 +37,13 @@
             </thead>
             <tbody>
             <tr th:each="notice : ${noticeList}">
-                <td th:text="${notice.title}"></td>
+                <td>
+                    <input type="checkbox" th:name="checkedId" th:value="${notice.id}">
+                </td>
+                <td>
+                    <a href="#" th:href="@{/notice/{id}/edit (id=${notice.id})}" role="button"
+                        th:text="${notice.title}"></a>
+                </td>
                 <td th:text="${notice.content}"></td>
                 <td th:text="${notice.note}"></td>
                 <td th:text="${notice.createdAt}"></td>
@@ -44,6 +54,10 @@
             </tbody>
         </table>
     </div>
+    <div>
+        <button type="button" onclick="deleteNotice()" class="btn-secondary">삭제</button>
+    </div>
+    <br><br>
 
     <div th:replace="fragments/footer :: footer" />
 
@@ -51,4 +65,29 @@
 
 </body>
 </html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script th:inline="javascript">
+    function deleteNotice() {
+        var selectedElement = $("[name=checkedId]:checked");
+        var ids = "";
+        Array.from(selectedElement).forEach((el, index) => {
+            if(index+1 == selectedElement.length) {
+                ids += el.value
+            } else {
+                ids += el.value + ",";
+            }
+        });
 
+        var loginUserIdInputTag = document.getElementById("loginUserId");
+        var offset = 0;
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/notice/"+ids+"/delete/"+offset);
+
+        form.appendChild(loginUserIdInputTag);
+        document.body.appendChild(form);
+
+        form.submit();
+    }
+</script>

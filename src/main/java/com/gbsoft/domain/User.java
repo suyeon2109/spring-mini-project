@@ -27,7 +27,7 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private List<Notice> noticeList = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "user")
+//    private List<Notice> noticeList = new ArrayList<>();
 }
