@@ -2,9 +2,11 @@ package com.gbsoft.util;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Pagination {
 
     /** 1. 페이지 당 보여지는 게시글의 최대 개수 **/
@@ -89,6 +91,12 @@ public class Pagination {
 
         /* === 다음 블럭에 대한 validation ===*/
         if(nextBlock > totalPageCnt) {nextBlock = totalPageCnt;}
+
+        // page 갯수 0 validation
+        if(totalPageCnt == 0){
+            this.totalPageCnt = 1;
+            this.endPage = 1;
+        }
 
         /** 10. DB 접근 시작 index **/
         setStartIndex((page-1) * pageSize);
