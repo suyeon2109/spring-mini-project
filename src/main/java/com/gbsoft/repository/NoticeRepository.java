@@ -1,6 +1,7 @@
 package com.gbsoft.repository;
 
 import com.gbsoft.domain.Notice;
+import com.gbsoft.dto.NoticeForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
@@ -60,5 +61,8 @@ public class NoticeRepository {
                 .setParameter("title", "%"+keyword+"%")
                 .getSingleResult())
                 .intValue();
+    }
+
+    public void update(NoticeForm form) {
     }
 }

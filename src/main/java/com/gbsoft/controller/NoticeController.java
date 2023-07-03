@@ -75,4 +75,25 @@ public class NoticeController {
         String redirectUri = "/notice/list?loginUserId="+loginUserId+"&page="+page+"&searchType="+searchType+"&keyword="+keyword;
         return "redirect:"+redirectUri;
     }
+
+    @GetMapping("/notice/{id}/edit")
+    public String noticeEditForm(Model model, String loginUserId, @PathVariable Long id) {
+        Notice notice = noticeService.findNoticeById(id);
+
+        model.addAttribute("noticeForm", notice);
+        model.addAttribute("loginUserId", loginUserId);
+        return "notice/updateNoticeForm";
+    }
+
+    @PostMapping("/notice/{id}/edit")
+    @ResponseBody
+    public Map<String,String> update(NoticeForm form, @PathVariable Long id) {
+        Map<String, String> map = new HashMap<>();
+
+        noticeService.update(form, id);
+        map.put("message", "공지사항이 수정되었습니다.");
+        map.put("redirectUrl", "/notice/list?loginUserId="+form.getLoginUserId()+"&searchType=title&keyword=");
+        return map;
+    }
+
 }

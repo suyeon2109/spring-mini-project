@@ -91,4 +91,18 @@ public class NoticeService {
 
         return result;
     }
+
+    public Notice findNoticeById(Long id) {
+        return noticeRepository.findById(id);
+    }
+
+    @Transactional
+    public void update(NoticeForm form, Long id) {
+        Notice notice = findNoticeById(id);
+        notice.setTitle(form.getTitle());
+        notice.setContent(form.getContent());
+        notice.setNote(form.getNote());
+        notice.setModifiedAt(LocalDateTime.now());
+        notice.setModifiedWriterId(AesEncDec.encrypt(form.getLoginUserId()));
+    }
 }

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <form role="form" th:object="${noticeForm}">
+        <div class="form-group">
+            <label th:for="title">제목</label>
+            <input type="text" th:field="*{title}" class="form-control" placeholder="제목을 입력하세요" required>
+        </div>
+        <div class="form-group">
+            <label th:for="content">내용</label>
+            <textarea type="text" th:field="*{content}" class="form-control" placeholder="내용을 입력하세요" required></textarea>
+        </div>
+        <div class="form-group">
+            <label th:for="note">비고</label>
+            <input type="text" th:field="*{note}" class="form-control" placeholder="비고를 입력하세요">
+        </div>
+
+        <input type="hidden" th:value="${loginUserId}" id="loginUserId">
+        <input type="hidden" th:value="${id}" id="id">
+
+        <button type="button" onclick="dataSend()" class="btn btn-primary">수정</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+
+</body>
+</html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script th:inline="javascript">
+    function dataSend(){
+        var data = {
+            title:$("#title").val(),
+            content: $("#content").val(),
+            note: $("#note").val(),
+            loginUserId: $("#loginUserId").val()
+        };
+        $.ajax({
+            url: "/notice/"+$("#id").val()+"/edit",
+            data: data,
+            type: 'POST',
+        }).done(function (data){
+            alert(data.message);
+            if(data.redirectUrl != ""){
+                location.href = data.redirectUrl;
+            }
+        });
+    }
+</script>

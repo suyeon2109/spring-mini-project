@@ -41,7 +41,7 @@
                     <input type="checkbox" th:name="checkedId" th:value="${notice.id}">
                 </td>
                 <td>
-                    <a href="#" th:href="@{/notice/{id}/edit (id=${notice.id})}" role="button"
+                    <a href="#" th:href="@{/notice/{id}/edit (id=${notice.id}, loginUserId = ${loginUserId})}" role="button"
                         th:text="${notice.title}"></a>
                 </td>
                 <td th:text="${notice.content}"></td>
