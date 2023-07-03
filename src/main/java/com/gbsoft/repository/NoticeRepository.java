@@ -19,18 +19,25 @@ public class NoticeRepository {
         return notice.getId();
     }
 
-    public List<Notice> findAll(int startNum) {
+//    public List<Notice> findAll(int startNum) {
+//        return em.createQuery("select n from Notice n order by n.createdAt desc", Notice.class)
+//                .setFirstResult(startNum)
+//                .setMaxResults(10)
+//                .getResultList();
+//    }
+
+    public List<Notice> findAll(int startIndex, int pageSize) {
         return em.createQuery("select n from Notice n order by n.createdAt desc", Notice.class)
-                .setFirstResult(startNum)
-                .setMaxResults(10)
+                .setFirstResult(startIndex)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 
-    public List<Notice> findByTitle(String keyword, int startNum) {
+    public List<Notice> findByTitle(String keyword, int startIndex, int pageSize) {
         return em.createQuery("select n from Notice n where n.title like :title order by n.createdAt desc", Notice.class)
                 .setParameter("title", "%"+keyword+"%")
-                .setFirstResult(startNum)
-                .setMaxResults(10)
+                .setFirstResult(startIndex)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 
@@ -40,5 +47,18 @@ public class NoticeRepository {
 
     public void delete(Notice notice) {
         em.remove(notice);
+    }
+
+    public int findAllNoticeCount() {
+        return ((Number) em.createQuery("select count(*) from Notice")
+                .getSingleResult())
+                .intValue();
+    }
+
+    public int findByTitleCount(String keyword) {
+        return ((Number) em.createQuery("select count(*) from Notice n where n.title like :title")
+                .setParameter("title", "%"+keyword+"%")
+                .getSingleResult())
+                .intValue();
     }
 }

@@ -39,9 +39,12 @@ public class NoticeService {
         return notice;
     }
 
-    public List<Notice> findAllNotice(int offset) {
-        int startNum = offset*10 + 1;
-        List<Notice> noticeList = noticeRepository.findAll(startNum);
+    public int findAllNoticeCount() {
+        return noticeRepository.findAllNoticeCount();
+    }
+
+    public List<Notice> findAllNotice(int startIndex, int pageSize) {
+        List<Notice> noticeList = noticeRepository.findAll(startIndex, pageSize);
         for(Notice n : noticeList){
             n.setCreatedWriterId(AesEncDec.decrypt(n.getCreatedWriterId()));
             if(!(n.getModifiedWriterId() == null)) {
@@ -51,12 +54,11 @@ public class NoticeService {
         return noticeList;
     }
 
-    public List<Notice> searchNotice(NoticeFindForm form, int offset) {
+    public List<Notice> searchNotice(NoticeFindForm form, int startIndex, int pageSize) {
         List<Notice> noticeList = new ArrayList<>();
-        int startNum = offset*10 + 1;
 
-        if(form.getSearchType().equals("title")){
-            noticeList = noticeRepository.findByTitle(form.getKeyword(), startNum);
+        if("title".equals(form.getSearchType())){
+            noticeList = noticeRepository.findByTitle(form.getKeyword(), startIndex, pageSize);
         }
 
         for(Notice n : noticeList){
@@ -79,5 +81,14 @@ public class NoticeService {
             Notice notice = noticeRepository.findById(Long.parseLong(s));
             noticeRepository.delete(notice);
         }
+    }
+    public int findNoticeCount(NoticeFindForm form) {
+        int result = 0;
+
+        if("title".equals(form.getSearchType())){
+            result = noticeRepository.findByTitleCount(form.getKeyword());
+        }
+
+        return result;
     }
 }

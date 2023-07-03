@@ -7,13 +7,13 @@
     <div th:replace="fragments/bodyHeader :: bodyHeader" />
     <!--/* 검색 */-->
     <div class="search_box">
-        <form role="form" action="/notice/find" th:object="${noticeFindForm}" method="get">
+        <form role="form" action="/notice/list" th:object="${noticeFindForm}" method="get">
             <div>
                 <select title="검색 유형 선택" th:field="*{searchType}">
                     <option value="title">제목</option>
                 </select>
                 <input type="text" title="키워드 입력" th:field="*{keyword}"/>
-                <input type="hidden" th:value="0" name="offset">
+                <input type="hidden" th:value="1" name="page">
                 <input type="hidden" th:value="${loginUserId}" id="loginUserId" name="loginUserId">
                 <button type="submit" class="btn-secondary">검색</button>
 <!--                <button type="button" onclick="search()" class="btn-secondary">검색</button>-->
@@ -58,6 +58,38 @@
         <button type="button" onclick="deleteNotice()" class="btn-secondary">삭제</button>
     </div>
     <br><br>
+<!--    paging button-->
+    <nav aria-label="Page navigation example ">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" th:href="@{/notice/list (page = 1, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Previous">
+                    <span aria-hidden="true">처음</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.prevBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Previous">
+                    <span aria-hidden="true">이전</span>
+                </a>
+            </li>
+            <th:block  th:with="start = ${pagination.startPage}, end = ${pagination.endPage}">
+                <li class="page-item"
+                    th:with="start = ${pagination.startPage}, end = ${pagination.endPage}"
+                    th:each="pageButton : ${#numbers.sequence(start, end)}">
+                    <a class="page-link" th:href="@{/notice/list (page = ${pageButton}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" th:text="${pageButton}"></a>
+                </li>
+            </th:block>
+            <li class="page-item">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.nextBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Next">
+                    <span aria-hidden="true">다음</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.totalPageCnt}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Previous">
+                    <span aria-hidden="true">끝</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 
     <div th:replace="fragments/footer :: footer" />
 
@@ -79,13 +111,17 @@
         });
 
         var loginUserIdInputTag = document.getElementById("loginUserId");
-        var offset = 0;
+        var searchType = document.getElementById("searchType");
+        var keyword = document.getElementById("keyword");
+        var page = 1;
 
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/notice/"+ids+"/delete/"+offset);
+        form.setAttribute("action", "/notice/"+ids+"/delete/"+page);
 
         form.appendChild(loginUserIdInputTag);
+        form.appendChild(searchType);
+        form.appendChild(keyword);
         document.body.appendChild(form);
 
         form.submit();

@@ -6,6 +6,7 @@ import com.gbsoft.dto.*;
 import com.gbsoft.service.LoginService;
 import com.gbsoft.service.NoticeService;
 import com.gbsoft.util.AesEncDec;
+import com.gbsoft.util.Pagination;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -52,30 +53,26 @@ public class NoticeController {
     }
 
     @GetMapping("/notice/list")
-    public String list(Model model, String loginUserId, int offset) {
-        List<Notice> noticeList = noticeService.findAllNotice(offset);
-        model.addAttribute("noticeFindForm", new NoticeFindForm());
+    public String search(NoticeFindForm form, Model model, String loginUserId, @RequestParam(defaultValue = "1") int page) {
+        int totalListCount = noticeService.findNoticeCount(form);
+        Pagination pagination = new Pagination(totalListCount, page);
+
+        int startIndex = pagination.getStartIndex();
+        int pageSize = pagination.getPageSize(); // 페이지 당 보여지는 게시글의 최대 개수
+
+        List<Notice> noticeList = noticeService.searchNotice(form, startIndex, pageSize);
+        model.addAttribute("noticeFindForm", form);
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("loginUserId", loginUserId);
+        model.addAttribute("pagination", pagination);
         return "notice/noticeList";
     }
 
-    @GetMapping("/notice/find")
-    public String search(NoticeFindForm form, Model model, String loginUserId, int offset) {
-        List<Notice> noticeList = noticeService.searchNotice(form, offset);
-        model.addAttribute("noticeFindForm", new NoticeFindForm());
-        model.addAttribute("noticeList", noticeList);
-        model.addAttribute("loginUserId", loginUserId);
-        model.addAttribute("offset", offset);
-        return "notice/noticeList";
-    }
-
-    @PostMapping("/notice/{ids}/delete/{offset}")
-    public String delete(@PathVariable String ids, String loginUserId, @PathVariable int offset) {
+    @PostMapping("/notice/{ids}/delete/{page}")
+    public String delete(@PathVariable String ids, String loginUserId, @PathVariable int page, String searchType, String keyword) {
         noticeService.delete(ids);
 
-
-        String redirectUri = "/notice/list?loginUserId="+loginUserId+"&offset="+offset;
+        String redirectUri = "/notice/list?loginUserId="+loginUserId+"&page="+page+"&searchType="+searchType+"&keyword="+keyword;
         return "redirect:"+redirectUri;
     }
 }
