@@ -6,7 +6,7 @@
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader" />
     <!--/* 검색 */-->
-    <div class="search_box">
+    <div style="display: inline-block; width: 50%;">
         <form role="form" action="/notice/list" th:object="${noticeFindForm}" method="get">
             <div>
                 <select title="검색 유형 선택" th:field="*{searchType}">
@@ -15,12 +15,25 @@
                 <input type="text" title="키워드 입력" th:field="*{keyword}"/>
                 <input type="hidden" th:value="1" name="page">
                 <input type="hidden" th:value="${loginUserId}" id="loginUserId" name="loginUserId">
+                <input type="hidden" th:value="${descAsc}" id="descAsc" name="descAsc">
+                <input type="hidden" th:value="${sortBy}" id="sortBy" name="sortBy">
                 <button type="submit" class="btn-secondary">검색</button>
-<!--                <button type="button" onclick="search()" class="btn-secondary">검색</button>-->
             </div>
         </form>
     </div>
-    <br/>
+    <div style="display: inline-block; float: right">
+        <select title="정렬 선택" th:value="${descAsc}" id="descAscSelect" name="descAscSelect" th:onchange="sortChange()">
+            <option value="desc" th:selected="${descAsc.equals('desc')}">내림차순</option>
+            <option value="asc" th:selected="${descAsc.equals('asc')}">오름차순</option>
+        </select>
+    </div>
+    <div style="display: inline-block; float: right">
+        <select title="정렬 기준 선택" th:value="${sortBy}" id="sortBySelect" name="sortBySelect" th:onchange="sortChange()">
+            <option value="createdAt" th:selected="${sortBy.equals('createdAt')}">생성시각순</option>
+            <option value="title" th:selected="${sortBy.equals('title')}">제목순</option>
+        </select>
+    </div>
+    <br/><br>
     <div>
         <table class="table table-striped">
             <thead>
@@ -46,9 +59,9 @@
                 </td>
                 <td th:text="${notice.content}"></td>
                 <td th:text="${notice.note}"></td>
-                <td th:text="${notice.createdAt}"></td>
+                <td th:text="${#strings.substring(notice.createdAt,0,19)}"></td>
                 <td th:text="${notice.createdWriterId}"></td>
-                <td th:text="${notice.modifiedAt}"></td>
+                <td th:text="${#strings.substring(notice.modifiedAt,0,19)}"></td>
                 <td th:text="${notice.modifiedWriterId}"></td>
             </tr>
             </tbody>
@@ -59,15 +72,15 @@
     </div>
     <br><br>
 <!--    paging button-->
-    <nav aria-label="Page navigation example ">
+    <nav aria-label="Page navigation" class="align-content-center">
         <ul class="pagination">
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = 1, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Previous">
+                <a class="page-link" th:href="@{/notice/list (page = 1, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
                     <span aria-hidden="true">처음</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = ${pagination.prevBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Previous">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.prevBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
                     <span aria-hidden="true">이전</span>
                 </a>
             </li>
@@ -75,16 +88,16 @@
                 <li class="page-item"
                     th:with="start = ${pagination.startPage}, end = ${pagination.endPage}"
                     th:each="pageButton : ${#numbers.sequence(start, end)}">
-                    <a class="page-link" th:href="@{/notice/list (page = ${pageButton}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" th:text="${pageButton}"></a>
+                    <a class="page-link" th:href="@{/notice/list (page = ${pageButton}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" th:text="${pageButton}"></a>
                 </li>
             </th:block>
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = ${pagination.nextBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Next">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.nextBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Next">
                     <span aria-hidden="true">다음</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = ${pagination.totalPageCnt}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()})}" aria-label="Previous">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.totalPageCnt}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
                     <span aria-hidden="true">끝</span>
                 </a>
             </li>
@@ -113,6 +126,8 @@
         var loginUserIdInputTag = document.getElementById("loginUserId");
         var searchType = document.getElementById("searchType");
         var keyword = document.getElementById("keyword");
+        var sortBy = document.getElementById("sortBy");
+        var descAsc = document.getElementById("descAsc");
         var page = 1;
 
         var form = document.createElement("form");
@@ -122,6 +137,38 @@
         form.appendChild(loginUserIdInputTag);
         form.appendChild(searchType);
         form.appendChild(keyword);
+        form.appendChild(sortBy);
+        form.appendChild(descAsc);
+        document.body.appendChild(form);
+
+        form.submit();
+    }
+
+    function sortChange(){
+        var sortByElement = document.getElementById("sortBySelect");
+        var sortByVal = sortByElement.options[sortByElement.selectedIndex].value;
+        var descAscElement = document.getElementById("descAscSelect");
+        var descAscVal = descAscElement.options[descAscElement.selectedIndex].value;
+
+        $("#sortBy").val(sortByVal);
+        $("#descAsc").val(descAscVal);
+
+        var loginUserIdInputTag = document.getElementById("loginUserId");
+        var searchType = document.getElementById("searchType");
+        var keyword = document.getElementById("keyword");
+        var sortBy = document.getElementById("sortBy");
+        var descAsc = document.getElementById("descAsc");
+        var page = 1;
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "get");
+        form.setAttribute("action", "/notice/list");
+
+        form.appendChild(loginUserIdInputTag);
+        form.appendChild(searchType);
+        form.appendChild(keyword);
+        form.appendChild(sortBy);
+        form.appendChild(descAsc);
         document.body.appendChild(form);
 
         form.submit();

@@ -33,9 +33,19 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <script th:inline="javascript">
     function dataSend(){
+        var title = $("#title").val();
+        var content = $("#content").val();
+        if(""==title){
+            alert("제목은 필수 값 입니다.");
+            return false;
+        } else if(""==content){
+            alert("내용은 필수 값 입니다.");
+            return false;
+        }
+
         var data = {
-            title:$("#title").val(),
-            content: $("#content").val(),
+            title:title,
+            content: content,
             note: $("#note").val(),
             loginUserId: $("#loginUserId").val()
         };

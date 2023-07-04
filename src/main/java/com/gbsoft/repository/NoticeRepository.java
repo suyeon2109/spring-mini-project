@@ -1,6 +1,7 @@
 package com.gbsoft.repository;
 
 import com.gbsoft.domain.Notice;
+import com.gbsoft.dto.NoticeFindForm;
 import com.gbsoft.dto.NoticeForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,9 +35,9 @@ public class NoticeRepository {
                 .getResultList();
     }
 
-    public List<Notice> findByTitle(String keyword, int startIndex, int pageSize) {
-        return em.createQuery("select n from Notice n where n.title like :title order by n.createdAt desc", Notice.class)
-                .setParameter("title", "%"+keyword+"%")
+    public List<Notice> findByTitle(NoticeFindForm form, int startIndex, int pageSize) {
+        return em.createQuery("select n from Notice n where n.title like :title order by "+form.getSortBy()+" "+form.getDescAsc(), Notice.class)
+                .setParameter("title", "%"+form.getKeyword()+"%")
                 .setFirstResult(startIndex)
                 .setMaxResults(pageSize)
                 .getResultList();
@@ -56,13 +57,10 @@ public class NoticeRepository {
                 .intValue();
     }
 
-    public int findByTitleCount(String keyword) {
+    public int findByTitleCount(NoticeFindForm form) {
         return ((Number) em.createQuery("select count(*) from Notice n where n.title like :title")
-                .setParameter("title", "%"+keyword+"%")
+                .setParameter("title", "%"+form.getKeyword()+"%")
                 .getSingleResult())
                 .intValue();
-    }
-
-    public void update(NoticeForm form) {
     }
 }

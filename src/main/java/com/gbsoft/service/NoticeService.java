@@ -58,7 +58,7 @@ public class NoticeService {
         List<Notice> noticeList = new ArrayList<>();
 
         if("title".equals(form.getSearchType())){
-            noticeList = noticeRepository.findByTitle(form.getKeyword(), startIndex, pageSize);
+            noticeList = noticeRepository.findByTitle(form, startIndex, pageSize);
         }
 
         for(Notice n : noticeList){
@@ -74,10 +74,8 @@ public class NoticeService {
     @Transactional
     public void delete(String ids) {
         String[] stringIdList = ids.split(",");
-        System.out.println("stringIdList.length"+stringIdList.length);
 
         for(String s: stringIdList){
-            System.out.println(s);
             Notice notice = noticeRepository.findById(Long.parseLong(s));
             noticeRepository.delete(notice);
         }
@@ -86,7 +84,7 @@ public class NoticeService {
         int result = 0;
 
         if("title".equals(form.getSearchType())){
-            result = noticeRepository.findByTitleCount(form.getKeyword());
+            result = noticeRepository.findByTitleCount(form);
         }
 
         return result;
