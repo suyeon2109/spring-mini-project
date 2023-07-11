@@ -19,6 +19,7 @@
         <button type="button" onclick="dataSend()" class="btn btn-primary">Login</button>
     </form>
     <br/>
+
     <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
 
@@ -38,7 +39,8 @@
         }).done(function (data){
             alert(data.message);
             if(data.redirectUrl != ""){
-                location.href = data.redirectUrl + "?writerId=" + $("#writerId").val();
+                location.href = data.redirectUrl;
+                // location.href = data.redirectUrl + "?writerId=" + $("#writerId").val();
             }
         });
     }

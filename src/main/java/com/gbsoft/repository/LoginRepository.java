@@ -1,6 +1,5 @@
 package com.gbsoft.repository;
 
-import com.gbsoft.domain.User;
 import com.gbsoft.domain.UserToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,8 +13,15 @@ public class LoginRepository {
     private final EntityManager em;
 
     public List<UserToken> findByWriterId(String writerId){
-        return em.createQuery("select ut from UserToken ut where ut.writerId = :writerId", UserToken.class)
+        return em.createQuery("select ut from UserToken ut where ut.user.writerId = :writerId", UserToken.class)
                 .setParameter("writerId", writerId)
+                .getResultList();
+    }
+
+    public List<UserToken> findByToken(String token){
+        return em.createQuery("select ut from UserToken ut join User u on ut.user.writerId= u.writerId where ut.accessToken = :accessToken or ut.refreshToken = :refreshToken order by ut.id desc", UserToken.class)
+                .setParameter("accessToken", token)
+                .setParameter("refreshToken", token)
                 .getResultList();
     }
 
@@ -32,10 +38,7 @@ public class LoginRepository {
         return originToken;
     }
 
-    public void delete(List<UserToken> userTokens) {
-        for(UserToken u: userTokens){
-            UserToken token = em.find(UserToken.class, u.getSeq());
-            em.remove(token);
-        }
+    public void delete(UserToken token) {
+        em.remove(token);
     }
 }

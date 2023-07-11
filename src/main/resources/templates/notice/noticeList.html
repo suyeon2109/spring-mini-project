@@ -14,7 +14,7 @@
                 </select>
                 <input type="text" title="키워드 입력" th:field="*{keyword}"/>
                 <input type="hidden" th:value="1" name="page">
-                <input type="hidden" th:value="${loginUserId}" id="loginUserId" name="loginUserId">
+<!--                <input type="hidden" th:value="${loginUserId}" id="loginUserId" name="loginUserId">-->
                 <input type="hidden" th:value="${descAsc}" id="descAsc" name="descAsc">
                 <input type="hidden" th:value="${sortBy}" id="sortBy" name="sortBy">
                 <button type="submit" class="btn-secondary">검색</button>
@@ -54,7 +54,7 @@
                     <input type="checkbox" th:name="checkedId" th:value="${notice.id}">
                 </td>
                 <td>
-                    <a href="#" th:href="@{/notice/{id}/edit (id=${notice.id}, loginUserId = ${loginUserId})}" role="button"
+                    <a href="#" th:href="@{/notice/{id}/edit (id=${notice.id})}" role="button"
                         th:text="${notice.title}"></a>
                 </td>
                 <td th:text="${notice.content}"></td>
@@ -75,12 +75,12 @@
     <nav aria-label="Page navigation" class="align-content-center">
         <ul class="pagination">
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = 1, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
+                <a class="page-link" th:href="@{/notice/list (page = 1, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
                     <span aria-hidden="true">처음</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = ${pagination.prevBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.prevBlock}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
                     <span aria-hidden="true">이전</span>
                 </a>
             </li>
@@ -88,16 +88,16 @@
                 <li class="page-item"
                     th:with="start = ${pagination.startPage}, end = ${pagination.endPage}"
                     th:each="pageButton : ${#numbers.sequence(start, end)}">
-                    <a class="page-link" th:href="@{/notice/list (page = ${pageButton}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" th:text="${pageButton}"></a>
+                    <a class="page-link" th:href="@{/notice/list (page = ${pageButton}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" th:text="${pageButton}"></a>
                 </li>
             </th:block>
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = ${pagination.nextBlock}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Next">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.nextBlock}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Next">
                     <span aria-hidden="true">다음</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" th:href="@{/notice/list (page = ${pagination.totalPageCnt}, loginUserId = ${loginUserId}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
+                <a class="page-link" th:href="@{/notice/list (page = ${pagination.totalPageCnt}, keyword= ${noticeFindForm.getKeyword()}, searchType= ${noticeFindForm.getSearchType()}, sortBy=${sortBy}, descAsc=${descAsc})}" aria-label="Previous">
                     <span aria-hidden="true">끝</span>
                 </a>
             </li>
@@ -123,7 +123,7 @@
             }
         });
 
-        var loginUserIdInputTag = document.getElementById("loginUserId");
+        // var loginUserIdInputTag = document.getElementById("loginUserId");
         var searchType = document.getElementById("searchType");
         var keyword = document.getElementById("keyword");
         var sortBy = document.getElementById("sortBy");
@@ -134,7 +134,7 @@
         form.setAttribute("method", "post");
         form.setAttribute("action", "/notice/"+ids+"/delete/"+page);
 
-        form.appendChild(loginUserIdInputTag);
+        // form.appendChild(loginUserIdInputTag);
         form.appendChild(searchType);
         form.appendChild(keyword);
         form.appendChild(sortBy);
@@ -153,7 +153,7 @@
         $("#sortBy").val(sortByVal);
         $("#descAsc").val(descAscVal);
 
-        var loginUserIdInputTag = document.getElementById("loginUserId");
+        // var loginUserIdInputTag = document.getElementById("loginUserId");
         var searchType = document.getElementById("searchType");
         var keyword = document.getElementById("keyword");
         var sortBy = document.getElementById("sortBy");
@@ -164,7 +164,7 @@
         form.setAttribute("method", "get");
         form.setAttribute("action", "/notice/list");
 
-        form.appendChild(loginUserIdInputTag);
+        // form.appendChild(loginUserIdInputTag);
         form.appendChild(searchType);
         form.appendChild(keyword);
         form.appendChild(sortBy);

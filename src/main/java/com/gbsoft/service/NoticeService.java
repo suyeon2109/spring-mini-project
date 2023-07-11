@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +21,18 @@ import java.util.List;
 public class NoticeService {
     private final NoticeRepository noticeRepository;
     @Transactional
-    public Long create(NoticeForm form){
-        Notice notice = createNotice(form);
+    public Long create(NoticeForm form, String writerId){
+        Notice notice = createNotice(form, writerId);
         return noticeRepository.save(notice);
     }
 
-    private Notice createNotice(NoticeForm form) {
+    private Notice createNotice(NoticeForm form, String writerId) {
         Notice notice = new Notice();
 
         notice.setTitle(form.getTitle());
         notice.setContent(form.getContent());
         notice.setNote(form.getNote());
-        notice.setCreatedWriterId(AesEncDec.encrypt(form.getLoginUserId()));
+        notice.setCreatedWriterId(writerId);
         notice.setCreatedAt(LocalDateTime.now());
 
         return notice;
@@ -95,12 +94,12 @@ public class NoticeService {
     }
 
     @Transactional
-    public void update(NoticeForm form, Long id) {
+    public void update(NoticeForm form, Long id, String writerId) {
         Notice notice = findNoticeById(id);
         notice.setTitle(form.getTitle());
         notice.setContent(form.getContent());
         notice.setNote(form.getNote());
         notice.setModifiedAt(LocalDateTime.now());
-        notice.setModifiedWriterId(AesEncDec.encrypt(form.getLoginUserId()));
+        notice.setModifiedWriterId(writerId);
     }
 }

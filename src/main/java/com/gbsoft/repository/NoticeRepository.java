@@ -2,13 +2,10 @@ package com.gbsoft.repository;
 
 import com.gbsoft.domain.Notice;
 import com.gbsoft.dto.NoticeFindForm;
-import com.gbsoft.dto.NoticeForm;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Repository

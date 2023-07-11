@@ -20,7 +20,7 @@
             <input type="text" th:field="*{note}" class="form-control" placeholder="비고를 입력하세요">
         </div>
 
-        <input type="hidden" th:value="${loginUserId}" id="loginUserId">
+<!--        <input type="hidden" th:value="${login.writerId}" id="loginUserId">-->
         <input type="hidden" th:value="${id}" id="id">
 
         <button type="button" onclick="dataSend()" class="btn btn-primary">수정</button>
@@ -37,15 +37,19 @@
         var data = {
             title:$("#title").val(),
             content: $("#content").val(),
-            note: $("#note").val(),
-            loginUserId: $("#loginUserId").val()
+            note: $("#note").val()
+            // loginUserId: $("#loginUserId").val()
         };
         $.ajax({
             url: "/notice/"+$("#id").val()+"/edit",
             data: data,
             type: 'POST',
         }).done(function (data){
-            alert(data.message);
+            if(data.message==undefined){
+                alert("공지사항 수정에 실패했습니다");
+            } else {
+                alert(data.message);
+            }
             if(data.redirectUrl != ""){
                 location.href = data.redirectUrl;
             }

@@ -14,8 +14,10 @@
     <div class="jumbotron">
         <p class="lead">공지사항</p>
         <p>
-            <a class="btn btn-lg btn-info" th:href="@{'/notice/regist?loginUserId=' + ${loginUserId}}">공지사항 등록</a>
-            <a class="btn btn-lg btn-info" th:href="@{'/notice/list?loginUserId=' + ${loginUserId} + '&page=1' + '&searchType=title&keyword=&sortBy=createdAt&descAsc=desc'}">공지사항 조회</a>
+<!--            <a class="btn btn-lg btn-info" th:href="@{'/notice/regist?loginUserId=' + ${login.writerId}}">공지사항 등록</a>-->
+<!--            <a class="btn btn-lg btn-info" th:href="@{'/notice/list?loginUserId=' + ${login.writerId} + '&page=1' + '&searchType=title&keyword=&sortBy=createdAt&descAsc=desc'}">공지사항 조회</a>-->
+            <a class="btn btn-lg btn-info" th:href="@{'/notice/regist'}">공지사항 등록</a>
+            <a class="btn btn-lg btn-info" th:href="@{'/notice/list?page=1&searchType=title&keyword=&sortBy=createdAt&descAsc=desc'}">공지사항 조회</a>
         </p>
     </div>
     <div th:replace="fragments/footer :: footer" />
