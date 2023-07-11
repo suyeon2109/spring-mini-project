@@ -44,8 +44,8 @@ public class LoginService {
     public UserToken saveToken(User user) {
         UserToken newToken = new UserToken();
         newToken.setUser(user);
-        newToken.setAccessToken(Jwt.token(user, Optional.of(LocalDateTime.now().plusMinutes(1))));
-        newToken.setRefreshToken(Jwt.token(user, Optional.of(LocalDateTime.now().plusMinutes(2))));
+        newToken.setAccessToken(Jwt.token(user, Optional.of(LocalDateTime.now().plusMinutes(30))));
+        newToken.setRefreshToken(Jwt.token(user, Optional.of(LocalDateTime.now().plusHours(2))));
         newToken.setUseYn("Y");
         newToken.setCreatedAt(LocalDateTime.now());
         loginRepository.save(newToken);
