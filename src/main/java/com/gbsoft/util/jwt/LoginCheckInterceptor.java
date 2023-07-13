@@ -54,10 +54,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     }
 
     private static String getTokenFromCookie(String cookieName, HttpServletRequest request) {
-        String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(cookieName))
-                .findFirst().map(Cookie::getValue)
-                .orElse("dummy");
+        String token = "dummy";
+        if(null != request.getCookies()){
+            token = Arrays.stream(request.getCookies())
+                    .filter(cookie -> cookie.getName().equals(cookieName))
+                    .findFirst().map(Cookie::getValue)
+                    .orElse("dummy");
+        }
         return token;
     }
 

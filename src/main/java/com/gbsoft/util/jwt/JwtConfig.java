@@ -17,7 +17,11 @@ public class JwtConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**")
-                .excludePathPatterns("/","/users/**","/login","/js/**","/css/**");
+                .excludePathPatterns("/","/users/**","/login","/js/**","/css/**","/error",
+                        "/v2/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui/**",
+                        "/webjars/**");
     }
 
     @Override

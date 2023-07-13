@@ -97,21 +97,4 @@ public class Jwt {
             return false;
         }
     }
-
-//    public static Authentication getAuthentication(String token) {
-//        Claims claims = verify(token);
-//
-//        if ("ADMIN".equals(claims.get("role"))) {
-//            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-//        }
-//
-//        Collection<? extends GrantedAuthority> authorities =
-//                Arrays.stream(claims.get("role").toString().split(","))
-//                        .map(SimpleGrantedAuthority::new)
-//                        .collect(Collectors.toList());
-//
-//        UserDetails principal = new User(claims.getSubject(), "", authorities);
-//
-//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
-//    }
 }

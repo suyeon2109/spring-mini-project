@@ -54,7 +54,7 @@ public class LoginService {
     }
 
     public String validateToken(String token, HttpServletResponse response) {
-        List<UserToken> userTokens = getUserTokens(token);
+        List<UserToken> userTokens = loginRepository.findByToken(token);
 
         if (userTokens.isEmpty()) {
             log.error("UserToken is not exist");
@@ -71,11 +71,6 @@ public class LoginService {
         }
     }
 
-    public List<UserToken> getUserTokens(String token) {
-        List<UserToken> userTokens = loginRepository.findByToken(token);
-        return userTokens;
-    }
-
     public HttpServletResponse saveCookie(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie("login_token", token);
         cookie.setPath("/");
@@ -89,7 +84,7 @@ public class LoginService {
 
     @Transactional
     public void deleteToken(String token) {
-        List<UserToken> tokenList = getUserTokens(token);
+        List<UserToken> tokenList = loginRepository.findByToken(token);
         for(UserToken u: tokenList){
             loginRepository.delete(u);
         }
