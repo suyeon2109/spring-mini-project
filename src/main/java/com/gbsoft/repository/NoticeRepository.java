@@ -13,9 +13,9 @@ import java.util.List;
 public class NoticeRepository {
     private final EntityManager em;
 
-    public Long save(Notice notice){
+    public String save(Notice notice){
         em.persist(notice);
-        return notice.getId();
+        return notice.getCreatedWriterId();
     }
 
 //    public List<Notice> findAll(int startNum) {

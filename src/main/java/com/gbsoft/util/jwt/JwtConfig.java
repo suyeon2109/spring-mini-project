@@ -21,7 +21,8 @@ public class JwtConfig implements WebMvcConfigurer {
                         "/v2/api-docs",
                         "/swagger-resources/**",
                         "/swagger-ui/**",
-                        "/webjars/**");
+                        "/webjars/**"
+                );
     }
 
     @Override

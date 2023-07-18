@@ -2,54 +2,66 @@ package com.gbsoft.controller;
 
 import com.gbsoft.domain.LoginUser;
 import com.gbsoft.domain.Notice;
-import com.gbsoft.dto.NoticeFindForm;
-import com.gbsoft.dto.NoticeForm;
+import com.gbsoft.dto.*;
 import com.gbsoft.service.NoticeService;
+import com.gbsoft.util.AesEncDec;
 import com.gbsoft.util.Pagination;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@ApiOperation(value = "")
 public class NoticeController {
     private final NoticeService noticeService;
 
-    @RequestMapping("/userHome")
-    public String userHome() {
-        return "userHome";
-    }
-    @GetMapping("/notice/regist")
-    public String noticeForm(Model model) {
-        model.addAttribute("noticeForm", new NoticeForm());
-        return "notice/createNoticeForm";
-    }
-
     @PostMapping("/notice/regist")
-    @ResponseBody
-    public Map<String,String> create(@Valid NoticeForm form, @LoginUser String writerId, BindingResult e) {
-        Map<String, String> map = new HashMap<>();
-        noticeService.create(form, writerId);
+    @ApiOperation(value = "공지사항 등록")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description ="공지사항 등록 성공", content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<CommonResponse> create(@Valid @RequestBody NoticeForm form, @LoginUser @ApiIgnore String writerId, BindingResult e) {
+        Map<String, Object> map = new HashMap<>();
 
         if(e.hasErrors()) {
-            map.put("message", e.getFieldErrors().get(0).getDefaultMessage());
-            map.put("redirectUrl", "");
+            throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
-            map.put("message", "공지사항이 등록되었습니다.");
-            map.put("redirectUrl", "/userHome");
+            String createdWriterId =  noticeService.create(form, writerId);
+            map.put("writerId", AesEncDec.decrypt(createdWriterId));
+            CommonResponse response = CommonResponse.builder()
+                    .code(HttpStatus.CREATED.value())
+                    .message("등록되었습니다.")
+                    .payload(map)
+                    .build();
+            return new ResponseEntity(response, HttpStatus.CREATED);
         }
-        return map;
     }
 
     @GetMapping("/notice/list")
-    public String search(NoticeFindForm form, Model model, @RequestParam(defaultValue = "1") int page) {
+    @ApiOperation(value = "공지사항 조회, 검색, 정렬")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description ="공지사항 조회 성공", content = @Content(schema = @Schema(implementation = NoticeListResponse.class))),
+            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<NoticeListResponse> search(@ModelAttribute NoticeFindForm form, @RequestParam(defaultValue = "1") int page) {
         int totalListCount = noticeService.findNoticeCount(form);
         Pagination pagination = new Pagination(totalListCount, page);
 
@@ -57,46 +69,83 @@ public class NoticeController {
         int pageSize = pagination.getPageSize(); // 페이지 당 보여지는 게시글의 최대 개수
 
         List<Notice> noticeList = noticeService.searchNotice(form, startIndex, pageSize);
-        model.addAttribute("noticeFindForm", form);
-        model.addAttribute("noticeList", noticeList);
-//        model.addAttribute("loginUserId", loginUserId);
-        model.addAttribute("pagination", pagination);
-        model.addAttribute("sortBy", form.getSortBy());
-        model.addAttribute("descAsc", form.getDescAsc());
 
-        return "notice/noticeList";
+        Map<String, Object> map = new HashMap<>();
+        map.put("noticeFindForm", form);
+        map.put("noticeList", noticeList);
+        map.put("pagination", pagination);
+
+        NoticeListResponse response = NoticeListResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("공지사항 조회 성공")
+                .payload(map)
+                .build();
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
-    @PostMapping("/notice/{ids}/delete/{page}")
-    public String delete(@PathVariable String ids, @PathVariable int page, NoticeFindForm form) {
-        noticeService.delete(ids);
+    @DeleteMapping("/notice/{ids}/delete/{page}")
+    @ApiOperation(value = "공지사항 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description ="공지사항 삭제 성공", content = @Content(schema = @Schema(implementation = NoticeDeleteResponse.class))),
+            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<NoticeDeleteResponse> delete(@PathVariable String ids, @PathVariable @ApiParam(example = "1,2,3") int page, @ModelAttribute NoticeFindForm form) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("noticeFindForm", form);
+        map.put("page", page);
 
-        String redirectUri = "/notice/list?&page="+page+"&searchType="+form.getSearchType()+"&keyword="+form.getKeyword()+"&sortBy="+form.getSortBy()+"&descAsc="+form.getDescAsc();
-        return "redirect:"+redirectUri;
+        noticeService.delete(ids);
+        NoticeDeleteResponse response = NoticeDeleteResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("삭제되었습니다.")
+                .payload(map)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/notice/{id}/edit")
-    public String noticeEditForm(Model model, @PathVariable Long id) {
+    @ApiOperation(value = "공지사항 수정을 위한 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description ="공지사항 조회 성공", content = @Content(schema = @Schema(implementation = UpdateResponse.class))),
+            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<UpdateResponse> noticeEditForm(Model model, @PathVariable @ApiParam(example = "1") Long id) {
         Notice notice = noticeService.findNoticeById(id);
 
-        model.addAttribute("noticeForm", notice);
-        return "notice/updateNoticeForm";
+        Map<String, Object> map = new HashMap<>();
+        map.put("noticeForm", notice);
+
+        UpdateResponse response = UpdateResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("공지사항 조회 성공")
+                .payload(map)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/notice/{id}/edit")
-    @ResponseBody
-    public Map<String,String> update(@Valid NoticeForm form, @PathVariable Long id, @LoginUser String writerId, BindingResult e) {
-        Map<String, String> map = new HashMap<>();
-        noticeService.update(form, id, writerId);
+    @PutMapping("/notice/{id}/edit")
+    @ApiOperation(value = "공지사항 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description ="공지사항 수정 성공", content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<CommonResponse> update(@Valid @RequestBody NoticeForm form, @PathVariable @ApiParam(example = "1") Long id, @LoginUser @ApiIgnore String writerId, BindingResult e) {
+        Map<String, Object> map = new HashMap<>();
 
         if(e.hasErrors()) {
-            map.put("message", e.getFieldErrors().get(0).getDefaultMessage());
-            map.put("redirectUrl", "");
+            throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
-            map.put("message", "공지사항이 수정되었습니다.");
-            map.put("redirectUrl", "/notice/list?searchType=title&keyword=&sortBy=createdAt&descAsc=desc");
+            noticeService.update(form, id, writerId);
+            CommonResponse response = CommonResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("수정되었습니다.")
+                    .payload(map)
+                    .build();
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        return map;
     }
 
 }

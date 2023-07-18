@@ -21,12 +21,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     @Transactional
-    public Long join(UserForm form){
+    public String join(UserForm form){
         User user = createUser(form);
 
         if(validateDuplicateUser(user.getWriterId())){
             userRepository.save(user);
-            return user.getId();
+            return user.getWriterId();
         } else {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
@@ -64,10 +64,12 @@ public class UserService {
     public List<User> searchUsers(UserFindForm form) {
         List<User> users = new ArrayList<>();
 
-        if(form.getSearchType().equals("writerId")){
+        if("writerId".equals(form.getSearchType())){
             users = userRepository.findByWriterId(AesEncDec.encrypt(form.getKeyword()));
-        } else {
+        } else if("writerName".equals(form.getSearchType())) {
             users = userRepository.findByName(AesEncDec.encrypt(form.getKeyword()));
+        } else {
+            throw new IllegalStateException("지원하지 않는 검색조건 입니다.");
         }
 
         for(User m : users){

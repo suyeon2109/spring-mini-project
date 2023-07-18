@@ -21,7 +21,7 @@ import java.util.List;
 public class NoticeService {
     private final NoticeRepository noticeRepository;
     @Transactional
-    public Long create(NoticeForm form, String writerId){
+    public String create(NoticeForm form, String writerId){
         Notice notice = createNotice(form, writerId);
         return noticeRepository.save(notice);
     }
@@ -55,6 +55,7 @@ public class NoticeService {
 
     public List<Notice> searchNotice(NoticeFindForm form, int startIndex, int pageSize) {
         List<Notice> noticeList = new ArrayList<>();
+        form.setKeyword(form.getKeyword()==null ? "" : form.getKeyword());
 
         if("title".equals(form.getSearchType())){
             noticeList = noticeRepository.findByTitle(form, startIndex, pageSize);

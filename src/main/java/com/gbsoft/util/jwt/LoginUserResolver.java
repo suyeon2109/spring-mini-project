@@ -24,6 +24,7 @@ public class LoginUserResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        System.out.println("resolveArgument");
         final Map<String, Object> resolved = new HashMap<>();
 
         HttpServletRequest req = (HttpServletRequest) webRequest.getNativeRequest();

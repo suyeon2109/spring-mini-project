@@ -27,6 +27,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws ModelAndViewDefiningException {
+        System.out.println("preHandle");
         String token = getTokenFromCookie(LoginCheckInterceptor.COOKIE_NAME, request);
         token = loginService.validateToken(token, response);
         log.info("token : {}", token);
@@ -40,14 +41,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
             // view 에서 login.writerId 로 접근가능
             request.setAttribute("login", user);
-            ModelAndView mav = new ModelAndView("/userHome");
+//            ModelAndView mav = new ModelAndView("/userHome");
         } catch (JwtException ex) {
             log.error(ex.getMessage());
 
             deleteCookie(response);
             loginService.deleteToken(token);
-            ModelAndView mav = new ModelAndView("/error");
-            throw new ModelAndViewDefiningException(mav);
+            throw new JwtException(ex.getMessage());
         }
 
         return true;
