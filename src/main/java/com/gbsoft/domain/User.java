@@ -2,6 +2,9 @@ package com.gbsoft.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +22,21 @@ import java.util.List;
 @Builder
 public class User {
     @Id @GeneratedValue
+    @ApiModelProperty
     private Long id;
     @NotNull
+    @ApiModelProperty
     private String writerId;
     @NotNull
+    @ApiModelProperty
     private String writerPwd;
     @NotNull
+    @ApiModelProperty
     private String writerName;
     @NotNull
+    @ApiModelProperty
     private LocalDateTime createdAt;
+    @ApiModelProperty
     private LocalDateTime modifiedAt;
 
 

@@ -1,7 +1,11 @@
 package com.gbsoft.controller;
 
 import com.gbsoft.domain.User;
-import com.gbsoft.dto.*;
+import com.gbsoft.dto.UserFindForm;
+import com.gbsoft.dto.UserForm;
+import com.gbsoft.dto.CommonResponse;
+import com.gbsoft.dto.ErrorResponse;
+import com.gbsoft.dto.UserFindDto;
 import com.gbsoft.service.UserService;
 import com.gbsoft.util.AesEncDec;
 import io.swagger.annotations.ApiOperation;
@@ -11,14 +15,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,67 +30,58 @@ public class UserController {
     @PostMapping("/users/join")
     @ApiOperation(value = "회원가입")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description ="공지사항 등록 성공", content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "201", description ="회원가입 성공"),
             @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description ="중복된 회원 존재", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<CommonResponse> create(@Valid @RequestBody UserForm form, BindingResult e) {
-        Map<String, Object> map = new HashMap<>();
-
+    public CommonResponse<?> create(@Valid @RequestBody UserForm form, BindingResult e) {
         if(e.hasErrors()) {
             throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
             String writerId = userService.join(form);
-            map.put("writerId", AesEncDec.decrypt(writerId));
-            CommonResponse response = CommonResponse.builder()
+            CommonResponse<String> response = CommonResponse.<String>builder()
                     .code(HttpStatus.CREATED.value())
                     .message("가입되었습니다.")
-                    .payload(map)
+                    .payload(AesEncDec.decrypt(writerId))
                     .build();
-            return new ResponseEntity(response, HttpStatus.CREATED);
+            return response;
         }
     }
 
     @GetMapping("/users")
     @ApiOperation(value = "전체회원 조회")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<CommonResponse> list() {
-        Map<String, Object> map = new HashMap<>();
+    public CommonResponse<UserFindDto> list() {
         List<User> users = userService.findAllUsers();
-        map.put("users", users);
-        CommonResponse response = CommonResponse.builder()
+        UserFindDto dto = new UserFindDto(users);
+        CommonResponse<UserFindDto> response = CommonResponse.<UserFindDto>builder()
                 .code(HttpStatus.OK.value())
                 .message("전체회원 조회")
-                .payload(map)
+                .payload(dto)
                 .build();
-        return new ResponseEntity(response, HttpStatus.OK);
+        return response;
     }
 
     @GetMapping("/users/find")
     @ApiOperation(value = "회원 검색")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description ="회원 검색", content = @Content(schema = @Schema(implementation = UserFindResponse.class))),
+            @ApiResponse(responseCode = "200", description ="회원 검색"),
             @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity search(@Valid @ModelAttribute UserFindForm form, BindingResult e) {
-        Map<String, Object> map = new HashMap<>();
+    public CommonResponse<UserFindDto> search(@Valid @ModelAttribute UserFindForm form, BindingResult e) {
         if(e.hasErrors()) {
-            ErrorResponse response = ErrorResponse.builder()
-                    .code(HttpStatus.BAD_REQUEST.value())
-                    .message(e.getFieldErrors().get(0).getDefaultMessage())
-                    .description("uri=/users/find")
-                    .build();
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+            throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
             List<User> users = userService.searchUsers(form);
-            map.put("users", users);
-            CommonResponse response = CommonResponse.builder()
+            UserFindDto dto = new UserFindDto(users);
+
+            CommonResponse<UserFindDto> response = CommonResponse.<UserFindDto>builder()
                     .code(HttpStatus.OK.value())
                     .message("회원 검색")
-                    .payload(map)
+                    .payload(dto)
                     .build();
-            return new ResponseEntity(response, HttpStatus.OK);
+            return response;
         }
     }
 }

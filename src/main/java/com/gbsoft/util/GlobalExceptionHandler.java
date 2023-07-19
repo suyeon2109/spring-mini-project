@@ -2,8 +2,6 @@ package com.gbsoft.util;
 
 import com.gbsoft.dto.ErrorResponse;
 import io.jsonwebtoken.JwtException;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

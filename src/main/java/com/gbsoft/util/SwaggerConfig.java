@@ -1,7 +1,9 @@
 package com.gbsoft.util;
 
 import com.fasterxml.classmate.TypeResolver;
-import com.gbsoft.dto.*;
+import com.gbsoft.dto.CommonResponse;
+import com.gbsoft.dto.ErrorResponse;
+import com.gbsoft.dto.UserFindDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +23,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .additionalModels(
                         typeResolver.resolve(CommonResponse.class),
-                        typeResolver.resolve(UserFindResponse.class),
-                        typeResolver.resolve(UserLoginResponse.class),
-                        typeResolver.resolve(NoticeListResponse.class),
-                        typeResolver.resolve(UpdateResponse.class),
+                        typeResolver.resolve(UserFindDto.class),
                         typeResolver.resolve(ErrorResponse.class)
                 )
                 .apiInfo(apiInfo())
