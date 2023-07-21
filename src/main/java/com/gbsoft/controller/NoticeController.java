@@ -28,14 +28,14 @@ import java.util.List;
 public class NoticeController {
     private final NoticeService noticeService;
 
-    @PostMapping("/notice/regist")
+    @PostMapping("/notice")
     @ApiOperation(value = "공지사항 등록")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description ="공지사항 등록 성공", content = @Content(schema = @Schema(implementation = CommonResponse.class))),
             @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<?> create(@Valid @RequestBody NoticeForm form, @LoginUser @ApiIgnore String writerId, BindingResult e) {
+    public CommonResponse<String> create(@Valid @RequestBody NoticeForm form, BindingResult e, @LoginUser @ApiIgnore String writerId) {
         if(e.hasErrors()) {
             throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
@@ -49,37 +49,43 @@ public class NoticeController {
         }
     }
 
-    @GetMapping("/notice/list")
+    @GetMapping("/notice")
     @ApiOperation(value = "공지사항 조회, 검색, 정렬")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description ="공지사항 조회 성공"),
-            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description ="지원하지 않는 검색조건", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public CommonResponse<NoticeFindDto> search(@ModelAttribute NoticeFindForm form, @RequestParam(defaultValue = "1") int page) {
-        int totalListCount = noticeService.findNoticeCount(form);
-        Pagination pagination = new Pagination(totalListCount, page);
+    public CommonResponse<NoticeFindDto> search(@ModelAttribute @Valid NoticeFindForm form, BindingResult e, @RequestParam(defaultValue = "1") int page) {
+        if(e.hasErrors()) {
+            throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
+        } else {
+            int totalListCount = noticeService.findNoticeCount(form);
+            Pagination pagination = new Pagination(totalListCount, page);
 
-        int startIndex = pagination.getStartIndex();
-        int pageSize = pagination.getPageSize(); // 페이지 당 보여지는 게시글의 최대 개수
+            int startIndex = pagination.getStartIndex();
+            int pageSize = pagination.getPageSize(); // 페이지 당 보여지는 게시글의 최대 개수
 
-        List<Notice> noticeList = noticeService.searchNotice(form, startIndex, pageSize);
-        NoticeFindDto dto = new NoticeFindDto(form, noticeList, pagination);
+            List<Notice> noticeList = noticeService.findNotice(form, startIndex, pageSize);
+            NoticeFindDto dto = new NoticeFindDto(form, noticeList, pagination);
 
-        CommonResponse<NoticeFindDto> response = CommonResponse.<NoticeFindDto>builder()
-                                                            .code(HttpStatus.OK.value())
-                                                            .message("공지사항 조회 성공")
-                                                            .payload(dto)
-                                                            .build();
-        return response;
+            CommonResponse<NoticeFindDto> response = CommonResponse.<NoticeFindDto>builder()
+                    .code(HttpStatus.OK.value())
+                    .message("공지사항 조회 성공")
+                    .payload(dto)
+                    .build();
+
+            return response;
+        }
     }
 
-    @DeleteMapping("/notice/{ids}/delete/{page}")
+    @DeleteMapping("/notice/{ids}/{page}")
     @ApiOperation(value = "공지사항 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description ="공지사항 삭제 성공"),
-            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "409", description ="존재하지 않는 id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public CommonResponse<NoticeDeleteDto> delete(@PathVariable String ids, @PathVariable @ApiParam(example = "1,2,3") int page, @ModelAttribute NoticeFindForm form) {
+    public CommonResponse<NoticeDeleteDto> delete(@PathVariable String ids, @PathVariable /*@ApiParam(example = "1,2,3")*/ int page, @ModelAttribute NoticeFindForm form) {
         NoticeDeleteDto dto = new NoticeDeleteDto(form, page);
 
         noticeService.delete(ids);
@@ -92,11 +98,11 @@ public class NoticeController {
         return response;
     }
 
-    @GetMapping("/notice/{id}/edit")
+    @GetMapping("/notice/{id}")
     @ApiOperation(value = "공지사항 수정을 위한 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description ="공지사항 조회 성공"),
-            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "409", description ="존재하지 않는 id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public CommonResponse<Notice> noticeEditForm(Model model, @PathVariable @ApiParam(example = "1") Long id) {
         Notice notice = noticeService.findNoticeById(id);
@@ -110,13 +116,13 @@ public class NoticeController {
         return response;
     }
 
-    @PutMapping("/notice/{id}/edit")
+    @PutMapping("/notice/{id}")
     @ApiOperation(value = "공지사항 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description ="공지사항 수정 성공"),
-            @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "409", description ="존재하지 않는 id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public CommonResponse<?> update(@Valid @RequestBody NoticeForm form, @PathVariable @ApiParam(example = "1") Long id, @LoginUser @ApiIgnore String writerId, BindingResult e) {
+    public CommonResponse<String> update(@Valid @RequestBody NoticeForm form, BindingResult e, @PathVariable @ApiParam(example = "1") Long id, @LoginUser @ApiIgnore String writerId) {
         if(e.hasErrors()) {
             throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
@@ -124,7 +130,7 @@ public class NoticeController {
             CommonResponse<String> response = CommonResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .message("수정되었습니다.")
-                    .payload(writerId)
+                    .payload(AesEncDec.decrypt(writerId))
                     .build();
 
             return response;

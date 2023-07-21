@@ -53,12 +53,14 @@ public class NoticeService {
         return noticeList;
     }
 
-    public List<Notice> searchNotice(NoticeFindForm form, int startIndex, int pageSize) {
+    public List<Notice> findNotice(NoticeFindForm form, int startIndex, int pageSize) {
         List<Notice> noticeList = new ArrayList<>();
         form.setKeyword(form.getKeyword()==null ? "" : form.getKeyword());
 
         if("title".equals(form.getSearchType())){
             noticeList = noticeRepository.findByTitle(form, startIndex, pageSize);
+        } else {
+            throw new IllegalStateException("지원하지 않는 검색조건 입니다.");
         }
 
         for(Notice n : noticeList){
@@ -76,7 +78,7 @@ public class NoticeService {
         String[] stringIdList = ids.split(",");
 
         for(String s: stringIdList){
-            Notice notice = noticeRepository.findById(Long.parseLong(s));
+            Notice notice = findNoticeById(Long.parseLong(s));
             noticeRepository.delete(notice);
         }
     }
@@ -91,12 +93,18 @@ public class NoticeService {
     }
 
     public Notice findNoticeById(Long id) {
-        return noticeRepository.findById(id);
+        Notice notice = noticeRepository.findById(id);
+        if(notice == null){
+            throw new IllegalStateException("공지사항이 존재하지 않습니다.");
+        } else {
+            return notice;
+        }
     }
 
     @Transactional
     public void update(NoticeForm form, Long id, String writerId) {
         Notice notice = findNoticeById(id);
+
         notice.setTitle(form.getTitle());
         notice.setContent(form.getContent());
         notice.setNote(form.getNote());

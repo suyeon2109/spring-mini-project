@@ -27,7 +27,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/users/join")
+    @PostMapping("/users")
     @ApiOperation(value = "회원가입")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description ="회원가입 성공"),
@@ -35,7 +35,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description ="중복된 회원 존재", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<?> create(@Valid @RequestBody UserForm form, BindingResult e) {
+    public CommonResponse<String> create(@Valid @RequestBody UserForm form, BindingResult e) {
         if(e.hasErrors()) {
             throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
@@ -49,22 +49,24 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users")
-    @ApiOperation(value = "전체회원 조회")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<UserFindDto> list() {
-        List<User> users = userService.findAllUsers();
-        UserFindDto dto = new UserFindDto(users);
-        CommonResponse<UserFindDto> response = CommonResponse.<UserFindDto>builder()
-                .code(HttpStatus.OK.value())
-                .message("전체회원 조회")
-                .payload(dto)
-                .build();
-        return response;
-    }
+//    @GetMapping("/users/all")
+//    @ApiOperation(value = "전체회원 조회")
+//    @ResponseStatus(HttpStatus.OK)
+//    public CommonResponse<UserFindDto> list() {
+//        List<User> users = userService.findAllUsers();
+//        UserFindDto dto = new UserFindDto(users);
+//
+//        CommonResponse<UserFindDto> response = CommonResponse.<UserFindDto>builder()
+//                .code(HttpStatus.OK.value())
+//                .message("전체회원 조회")
+//                .payload(dto)
+//                .build();
+//
+//        return response;
+//    }
 
-    @GetMapping("/users/find")
-    @ApiOperation(value = "회원 검색")
+    @GetMapping("/users")
+    @ApiOperation(value = "회원 조회, 검색")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description ="회원 검색"),
             @ApiResponse(responseCode = "400", description ="잘못된 파라미터", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -73,12 +75,12 @@ public class UserController {
         if(e.hasErrors()) {
             throw new IllegalArgumentException(e.getFieldErrors().get(0).getDefaultMessage());
         } else {
-            List<User> users = userService.searchUsers(form);
+            List<User> users = userService.findUsers(form);
             UserFindDto dto = new UserFindDto(users);
 
             CommonResponse<UserFindDto> response = CommonResponse.<UserFindDto>builder()
                     .code(HttpStatus.OK.value())
-                    .message("회원 검색")
+                    .message("회원 조회, 검색")
                     .payload(dto)
                     .build();
             return response;

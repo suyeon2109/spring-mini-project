@@ -61,13 +61,13 @@ public class UserService {
         return users;
     }
 
-    public List<User> searchUsers(UserFindForm form) {
+    public List<User> findUsers(UserFindForm form) {
         List<User> users = new ArrayList<>();
 
         if("writerId".equals(form.getSearchType())){
-            users = userRepository.findByWriterId(AesEncDec.encrypt(form.getKeyword()));
+            users = userRepository.findByWriterId(form.getKeyword()=="" ? "" : AesEncDec.encrypt(form.getKeyword()));
         } else if("writerName".equals(form.getSearchType())) {
-            users = userRepository.findByName(AesEncDec.encrypt(form.getKeyword()));
+            users = userRepository.findByName(form.getKeyword()=="" ? "" : AesEncDec.encrypt(form.getKeyword()));
         } else {
             throw new IllegalStateException("지원하지 않는 검색조건 입니다.");
         }

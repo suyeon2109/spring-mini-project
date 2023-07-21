@@ -6,15 +6,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter @Setter
 public class NoticeFindForm {
-    @ApiModelProperty(example = "title", required = true)
+    @NotBlank(message = "검색타입은 필수 값 입니다.")
+    @Schema(example = "title", required = true)
     private String searchType;
-    @ApiModelProperty(example = "keyword", allowEmptyValue = true)
+    @Schema(example = "keyword")
     private String keyword;
-    @ApiModelProperty(example = "title/createdAt", required = true)
+    @Schema(example = "title/createdAt", required = true)
     private String sortBy;
-    @ApiModelProperty(example = "desc/asc", required = true)
+    @Schema(example = "desc/asc", required = true)
     private String descAsc;
 
 }

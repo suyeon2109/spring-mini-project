@@ -26,8 +26,8 @@ public class UserRepository {
     }
 
     public List<User> findByName(String writerName){
-        return em.createQuery("select u from User u where u.writerName = :writerName", User.class)
-                .setParameter("writerName", writerName)
+        return em.createQuery("select u from User u where u.writerName like :writerName", User.class)
+                .setParameter("writerName", "%"+writerName+"%")
                 .getResultList();
     }
 
@@ -43,8 +43,8 @@ public class UserRepository {
 //    }
 
     public List<User> findByWriterId(String writerId){
-        return em.createQuery("select u from User u where u.writerId = :writerId", User.class)
-                .setParameter("writerId", writerId)
+        return em.createQuery("select u from User u where u.writerId like :writerId", User.class)
+                .setParameter("writerId", "%"+writerId+"%")
                 .getResultList();
     }
 

@@ -11,7 +11,7 @@ public class CommonResponse<T> {
     private Integer code;
     @ApiModelProperty(example = "등록되었습니다. / 로그인 되었습니다. / 수정되었습니다. / 삭제되었습니다.")
     private String message;
-    @ApiModelProperty(example = "{\n" +"        \"writerId\": \"test\"\n" +"}")
+    @ApiModelProperty(example = "writerId")
     private T payload;
 }
 
