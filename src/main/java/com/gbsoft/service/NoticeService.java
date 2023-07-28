@@ -82,11 +82,13 @@ public class NoticeService {
             noticeRepository.delete(notice);
         }
     }
+
     public int findNoticeCount(NoticeFindForm form) {
         int result = 0;
+        String keyword = form.getKeyword()==null?"":form.getKeyword();
 
         if("title".equals(form.getSearchType())){
-            result = noticeRepository.findByTitleCount(form);
+            result = noticeRepository.findByTitleCount(keyword);
         }
 
         return result;

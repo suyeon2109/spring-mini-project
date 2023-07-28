@@ -54,9 +54,9 @@ public class NoticeRepository {
                 .intValue();
     }
 
-    public int findByTitleCount(NoticeFindForm form) {
+    public int findByTitleCount(String keyword) {
         return ((Number) em.createQuery("select count(*) from Notice n where n.title like :title")
-                .setParameter("title", "%"+form.getKeyword()+"%")
+                .setParameter("title", "%"+keyword+"%")
                 .getSingleResult())
                 .intValue();
     }

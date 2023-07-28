@@ -7,11 +7,8 @@ import lombok.Getter;
 public class NoticeDeleteDto {
     @ApiModelProperty
     private NoticeFindForm form;
-    @ApiModelProperty
-    private int page;
 
-    public NoticeDeleteDto(NoticeFindForm form, int page) {
+    public NoticeDeleteDto(NoticeFindForm form) {
         this.form = form;
-        this.page = page;
     }
 }

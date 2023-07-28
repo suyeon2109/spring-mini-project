@@ -79,14 +79,14 @@ public class NoticeController {
         }
     }
 
-    @DeleteMapping("/notice/{ids}/{page}")
+    @DeleteMapping("/notice/{ids}")
     @ApiOperation(value = "공지사항 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description ="공지사항 삭제 성공"),
             @ApiResponse(responseCode = "409", description ="존재하지 않는 id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public CommonResponse<NoticeDeleteDto> delete(@PathVariable String ids, @PathVariable /*@ApiParam(example = "1,2,3")*/ int page, @ModelAttribute NoticeFindForm form) {
-        NoticeDeleteDto dto = new NoticeDeleteDto(form, page);
+    public CommonResponse<NoticeDeleteDto> delete(@PathVariable String ids, @ModelAttribute NoticeFindForm form) {
+        NoticeDeleteDto dto = new NoticeDeleteDto(form);
 
         noticeService.delete(ids);
         CommonResponse<NoticeDeleteDto> response = CommonResponse.<NoticeDeleteDto>builder()
