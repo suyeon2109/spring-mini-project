@@ -22,21 +22,21 @@ import java.util.List;
 @Builder
 public class User {
     @Id @GeneratedValue
-    @ApiModelProperty
+    @Schema(description = "회원 pk")
     private Long id;
     @NotNull
-    @ApiModelProperty
+    @Schema(description = "회원 아이디")
     private String writerId;
     @NotNull
-    @ApiModelProperty
+    @Schema(description = "회원 비밀번호")
     private String writerPwd;
     @NotNull
-    @ApiModelProperty
+    @Schema(description = "회원 이름")
     private String writerName;
     @NotNull
-    @ApiModelProperty
+    @Schema(description = "생성일자")
     private LocalDateTime createdAt;
-    @ApiModelProperty
+    @Schema(description = "수정일자")
     private LocalDateTime modifiedAt;
 
 
