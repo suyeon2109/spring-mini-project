@@ -4,6 +4,7 @@ spring:
       enabled: true
   datasource:
     url: jdbc:h2:tcp://localhost/~/developer/database/springMiniProject
+#    url: jdbc:h2:~/developer/database/springMiniProject
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -21,6 +22,13 @@ spring:
   thymeleaf:
     cache: false
 
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace
+
+server:
+  port: 9090
